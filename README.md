@@ -5,7 +5,7 @@ A modern, responsive web application designed for Visvesvaraya Technological Uni
 ---
 
 ### 🌐 Live Demo
-👉 **[View the Live Application](https://github.io)**
+👉 **[View the Live Application](https://arm-x-dev.github.io/vtu-sgpa-calculator/)**
 
 ---
 ## 🚀 Built With
