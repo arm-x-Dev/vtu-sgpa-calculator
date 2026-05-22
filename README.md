@@ -1,17 +1,67 @@
-# 📊 VTU SGPA Calculator - Expressive Edition
+# 📊 VTU SGPA Calculator — Expressive Edition
 
-A modern, responsive web application designed for students to calculate their Semester Grade Point Average (SGPA) with ease.
+A modern, responsive web application designed for Visvesvaraya Technological University (VTU) students to calculate their Semester Grade Point Average (SGPA) effortlessly.
+
+---
+
+### 🌐 Live Demo
+👉 **[View the Live Application](https://github.io)**
+
+---
+
+## 🚀 Badges
+
+![GitHub repo size](https://shields.io)
+![GitHub language count](https://shields.io)
+![GitHub top language](https://shields.io)
+![GitHub last commit](https://shields.io)
+
+---
 
 ## ✨ Features
-* **Dual Modes:** Preloaded curriculum for VTU ECE students and a Custom mode for any branch.
-* **Dynamic Calculations:** Real-time updates for grade points and total credits.
-* **Report Generation:** Export your results as a clean HTML report.
-* **Responsive Design:** Dark-themed UI built with Poppins font and fluid animations.
+
+* **Dual Modes:** Preloaded curriculum for ECE students alongside a fully Custom Mode for any branch.
+* **Dynamic Calculations:** Real-time feedback and updates for grade points and total credits.
+* **Report Generation:** Export final results instantly into a clean, downloadable HTML report.
+* **Responsive Design:** A premium dark-themed UI featuring the Poppins font and fluid animations.
+
+---
 
 ## 🛠️ Tech Stack
-* **Frontend:** HTML5, CSS3 (Custom properties & Animations)
-* **Logic:** Vanilla JavaScript
-* **Deployment:** GitHub Pages
 
-## 🚀 How to Use
-Simply visit the live site, select your semester or enter custom subjects, input your marks, and hit **Calculate**.
+![HTML5](https://shields.io)
+![CSS3](https://shields.io)
+![JavaScript](https://shields.io)
+![GitHub Pages](https://shields.io)
+
+---
+
+## 📖 How to Use
+
+1. **Visit** the live deployment link.
+2. **Select** your semester (for ECE) or choose **Custom Mode** to enter manual subjects.
+3. **Input** your marks and credits.
+4. **Click** on **Calculate** to see your real-time SGPA breakdown.
+5. **Export** the final report as an HTML document if needed.
+
+---
+
+## 🔧 Installation & Local Setup
+
+To run this project locally, execute the following commands in your terminal:
+
+```bash
+# Clone the repository
+git clone https://github.com
+
+# Navigate into the project directory
+cd your-repository-name
+
+# Open index.html in your preferred browser
+```
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License. See the `LICENSE` file for details.
