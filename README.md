@@ -55,13 +55,9 @@ To run this project locally, execute the following commands in your terminal:
 git clone https://github.com
 
 # Navigate into the project directory
-cd your-repository-name
+cd vtu-sgpa-calculator
 
 # Open index.html in your preferred browser
 ```
 
 ---
-
-## 📄 License
-
-This project is licensed under the MIT License. See the `LICENSE` file for details.
