@@ -6,51 +6,87 @@
 <title>SGPA Calculator - Expressive Edition</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg-color: #1a1a2e;
+    --bg-color: #0b0b1a;
     --session-primary-color: #00f5d4;
-    --card-bg: rgba(255, 255, 255, 0.05);
-    --border-color: rgba(255, 255, 255, 0.1);
-    --text-color: #e0e0e0;
-    --text-secondary-color: rgba(224, 224, 224, 0.7);
+    --session-secondary-color: #9b5de5;
+    --card-bg: rgba(20, 20, 45, 0.45);
+    --border-color: rgba(255, 255, 255, 0.08);
+    --text-color: #f3f4f6;
+    --text-secondary-color: rgba(243, 244, 246, 0.65);
+    --glow-color: rgba(0, 245, 212, 0.25);
+    --font-display: 'Outfit', sans-serif;
+    --font-body: 'Poppins', sans-serif;
+    --transition-smooth: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   body, html {
     margin: 0; padding: 0; width: 100%;
     background-color: var(--bg-color);
-    font-family: 'Poppins', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: var(--font-body);
     color: var(--text-color);
     overflow-x: hidden;
-    transition: background-color 0.5s ease;
+    transition: background-color 0.5s ease, color 0.5s ease;
+  }
+
+  h1, h2, h3, h4, h5, h6, th, #semesterTitle {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
+
+  /* Theme Switcher Styles */
+  .theme-switcher {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    padding: 6px 10px;
+    border-radius: 30px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    z-index: 1000;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.25);
+    transition: var(--transition-smooth);
+  }
+  .theme-switcher:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.15);
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.35);
+  }
+  .theme-btn {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    padding: 0;
+  }
+  .theme-btn:hover {
+    transform: scale(1.2);
+  }
+  .theme-btn.active {
+    border-color: #fff;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    transform: scale(1.1);
   }
   
-  .background-shapes {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: -1;
-      overflow: hidden;
-  }
-  .shape {
-      position: absolute;
-      border-radius: 50%;
-      background: var(--session-primary-color);
-      opacity: 0.15;
-      transition: background-color 0.5s ease;
-  }
-  .shape1 { width: 200px; height: 200px; top: 10%; left: 10%; animation: float 20s infinite alternate; }
-  .shape2 { width: 300px; height: 300px; bottom: 5%; right: 15%; animation: float 25s infinite alternate; }
-  .shape3 { width: 150px; height: 150px; top: 50%; left: 40%; animation: float 18s infinite alternate; }
-
-
-  @keyframes float {
-    0% { transform: translateY(0px); }
-    50% { transform: translateY(-20px); }
-    100% { transform: translateY(0px); }
+  #particleCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    pointer-events: none;
+    background-color: var(--bg-color);
+    transition: background-color 0.8s ease;
   }
 
   .screen {
@@ -65,6 +101,8 @@
       position: absolute;
       top: 0;
       left: 0;
+      right: 0;
+      margin: 0 auto;
       z-index: 1;
   }
   
@@ -82,27 +120,80 @@
 
   #welcomeScreen {
     display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
     cursor: pointer;
     z-index: 10;
   }
   #welcomeScreen h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 10px;
+    font-size: 4.5rem;
+    font-weight: 800;
+    margin: 0 0 20px 0;
     z-index: 2;
-    color: #fff;
-    text-shadow: 0 0 10px var(--session-primary-color), 0 0 20px #9b5de5;
+    background: linear-gradient(135deg, #fff 30%, var(--session-primary-color) 70%, var(--session-secondary-color) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 30px rgba(0, 245, 212, 0.15);
+    letter-spacing: -0.03em;
+    animation: textGlow 4s infinite alternate ease-in-out;
   }
+  
+  @keyframes textGlow {
+    from { filter: drop-shadow(0 0 5px rgba(0, 245, 212, 0.1)); }
+    to { filter: drop-shadow(0 0 20px rgba(155, 93, 229, 0.3)); }
+  }
+
   .welcome-hint {
-      font-size: 1rem;
-      font-weight: 400;
-      color: #fff;
-      opacity: 0.7;
-      animation: pulse 2s infinite;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    padding: 14px 36px;
+    border-radius: 50px;
+    cursor: pointer;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    transition: var(--transition-smooth);
+    animation: bouncePulse 2.5s infinite ease-in-out;
   }
-  @keyframes pulse {
-      0%, 100% { opacity: 0.7; }
-      50% { opacity: 1; }
+
+  .welcome-hint:hover {
+    background: rgba(255, 255, 255, 0.07);
+    border-color: var(--session-primary-color);
+    box-shadow: 0 0 25px rgba(0, 245, 212, 0.35);
+    transform: translateY(-2px);
+  }
+
+  .welcome-hint svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--session-primary-color);
+    stroke-width: 2.5;
+    fill: none;
+    transition: transform 0.3s ease, stroke 0.5s ease;
+  }
+
+  .welcome-hint:hover svg {
+    transform: translateX(6px);
+  }
+
+  @keyframes bouncePulse {
+    0%, 100% {
+      transform: translateY(0) scale(1);
+      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
+    }
+    50% {
+      transform: translateY(-4px) scale(1.02);
+      box-shadow: 0 12px 40px 0 rgba(0, 245, 212, 0.15);
+    }
   }
   #circleCanvas {
     position: absolute;
@@ -113,94 +204,118 @@
   }
 
   #choiceScreen h2, #semesterSelectionScreen h2 {
-      font-size: 2.5rem;
-      font-weight: 700;
+      font-size: 2.8rem;
+      font-weight: 800;
       color: var(--text-color);
-      text-shadow: 0 0 10px var(--session-primary-color);
+      text-shadow: 0 0 15px rgba(0, 245, 212, 0.15);
       margin-bottom: 40px;
       text-align: center;
+      letter-spacing: -0.02em;
   }
   #choiceGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 30px;
+    gap: 35px;
     width: 100%;
-    max-width: 700px;
+    max-width: 1050px;
   }
   .choice-card {
     background: var(--card-bg);
-    border: 2px solid transparent;
-    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    border-radius: 24px;
     overflow: hidden;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    transition: all 0.3s ease;
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: var(--transition-smooth);
     cursor: pointer;
     display: flex;
     flex-direction: column;
     position: relative;
-    animation: float 6s ease-in-out infinite;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+    transform-style: preserve-3d;
+  }
+  .choice-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: inherit;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.05), transparent);
+    pointer-events: none;
+  }
+  .choice-card::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .choice-card:hover::after {
+    opacity: 1;
   }
   .choice-card:hover {
-      animation-play-state: paused;
-      transform: translateY(-10px);
-  }
-  .choice-card .squiggle-svg {
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      stroke: var(--session-primary-color);
-      stroke-width: 3;
-      fill: transparent;
-      stroke-dasharray: 1200;
-      stroke-dashoffset: 1200;
-      transition: stroke-dashoffset 0.6s ease, stroke 0.5s ease;
-  }
-  .choice-card:hover .squiggle-svg {
-      stroke-dashoffset: 0;
+    border-color: rgba(255, 255, 255, 0.18);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35), 0 0 25px var(--glow-color);
   }
   .card-header {
-      background-color: rgba(0,0,0,0.1);
-      padding: 20px;
+      background-color: rgba(0, 0, 0, 0.15);
+      padding: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
       min-height: 120px;
+      border-bottom: 1px solid var(--border-color);
   }
   .card-header svg {
-      width: 60px;
-      height: 60px;
+      width: 50px;
+      height: 50px;
       color: var(--session-primary-color);
-      transition: color 0.5s ease;
+      filter: drop-shadow(0 0 10px var(--glow-color));
+      transition: var(--transition-smooth);
+  }
+  .choice-card:hover .card-header svg {
+      transform: scale(1.15) translateZ(20px);
   }
   .card-body {
-      padding: 25px;
+      padding: 30px;
       flex-grow: 1;
+      transform: translateZ(15px);
   }
   .card-body h3 {
       margin: 0 0 10px;
-      font-size: 1.5rem;
+      font-size: 1.6rem;
       color: var(--text-color);
+      font-weight: 700;
   }
   .card-body p {
       margin: 0;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       color: var(--text-secondary-color);
-      line-height: 1.6;
+      line-height: 1.65;
   }
   .card-footer {
-      padding: 20px 25px;
+      padding: 22px 30px;
       border-top: 1px solid var(--border-color);
+      background: rgba(0, 0, 0, 0.1);
   }
   .card-action-btn {
       background: none;
       border: none;
       color: var(--session-primary-color);
-      font-size: 1rem;
-      font-weight: 600;
+      font-size: 1.05rem;
+      font-weight: 700;
       cursor: pointer;
       padding: 0;
-      transition: color 0.5s ease;
+      transition: var(--transition-smooth);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+  }
+  .choice-card:hover .card-action-btn {
+      color: #fff;
+      text-shadow: 0 0 10px var(--session-primary-color);
   }
 
   #semesterGrid {
@@ -209,23 +324,26 @@
     gap: 25px;
     width: 100%;
     max-width: 900px;
-    margin: 0 auto; /* Center the grid container */
+    margin: 0 auto;
   }
   .sem-btn {
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 50px;
+    border-radius: 20px;
     color: var(--text-color);
-    padding: 25px;
-    font-size: 1.2rem;
-    font-weight: 600;
+    padding: 24px;
+    font-size: 1.15rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: var(--transition-smooth);
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
     opacity: 0;
     transform: translateY(20px);
-    animation: fadeInUp 0.5s ease forwards;
+    animation: fadeInUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
   }
   @keyframes fadeInUp {
       to {
@@ -234,92 +352,105 @@
       }
   }
   .sem-btn:hover {
-    background: var(--session-primary-color);
-    color: var(--bg-color);
+    background: linear-gradient(135deg, var(--session-primary-color), var(--session-secondary-color));
+    color: #0b0b1a;
+    border-color: transparent;
+    box-shadow: 0 8px 25px var(--glow-color);
+    transform: translateY(-5px);
+  }
+  .sem-btn:active {
+    transform: translateY(-2px);
   }
 
   #calculationScreen, #semesterSelectionScreen {
-    max-width: 900px;
+    max-width: 950px;
     margin: 0 auto;
     width: 100%;
+    left: 0;
+    right: 0;
   }
   .calc-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 30px;
+      margin-bottom: 35px;
       width: 100%;
   }
   #semesterTitle, #semesterSelectionScreen h2 {
-      font-size: 2rem;
-      font-weight: 700;
+      font-size: 2.2rem;
+      font-weight: 800;
       color: var(--text-color);
-      text-shadow: 0 0 8px var(--session-primary-color);
+      text-shadow: 0 0 10px var(--glow-color);
       text-align: center;
       flex-grow: 1;
       margin: 0;
+      letter-spacing: -0.02em;
   }
-  #backButton, #backToChoice {
+  #backButton, #backToChoice, #backFromCgpa {
       background: var(--card-bg);
       border: 1px solid var(--border-color);
       color: var(--text-color);
-      width: 50px;
-      height: 50px;
+      width: 48px;
+      height: 48px;
       border-radius: 50%;
-      font-size: 1.5rem;
+      font-size: 1.4rem;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: var(--transition-smooth);
       display: flex;
       justify-content: center;
       align-items: center;
       flex-shrink: 0;
   }
-  #backButton:hover, #backToChoice:hover {
+  #backButton:hover, #backToChoice:hover, #backFromCgpa:hover {
       background: var(--session-primary-color);
-      color: var(--bg-color);
-      transform: scale(1.1);
+      color: #0b0b1a;
+      border-color: transparent;
+      box-shadow: 0 0 15px var(--glow-color);
+      transform: scale(1.08);
   }
 
   .table-wrapper {
       width: 100%;
       overflow-x: auto;
-      border-radius: 15px;
+      border-radius: 24px;
       -webkit-overflow-scrolling: touch;
       border: 1px solid var(--border-color);
       background: var(--card-bg);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35);
+      padding: 8px;
   }
   table {
     border-collapse: separate;
     border-spacing: 0;
     width: 100%;
-    min-width: 700px; /* Ensure table has a minimum width for scrolling */
+    min-width: 750px;
   }
   th, td {
-    padding: 14px;
+    padding: 16px 12px;
     text-align: center;
-    font-weight: 400;
-    font-size: 0.9rem;
+    font-weight: 500;
+    font-size: 0.95rem;
     vertical-align: middle;
     border-bottom: 1px solid var(--border-color);
   }
   th {
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-color);
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(0, 0, 0, 0.15);
     text-transform: uppercase;
     letter-spacing: 1px;
+    font-size: 0.85rem;
   }
   tbody tr:last-child td {
     border-bottom: none;
   }
   tfoot td {
       font-weight: 700;
-      font-size: 1rem;
+      font-size: 1.1rem;
       color: var(--text-color);
-      background: rgba(0,0,0, 0.1);
+      background: rgba(0, 0, 0, 0.2);
       border-top: 1px solid var(--border-color);
   }
   .subject-cell {
@@ -330,35 +461,93 @@
       gap: 15px;
       font-weight: 600;
   }
-  .subject-cell > span {
-      flex-grow: 1;
-  }
   .subject-name-input {
       background: none;
       border: none;
       color: var(--text-color);
-      font-family: 'Poppins', sans-serif;
+      font-family: var(--font-body);
       font-weight: 600;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       width: 100%;
       outline: none;
-      padding: 5px;
-      border-radius: 5px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--border-color);
+      transition: var(--transition-smooth);
   }
   .subject-name-input:focus {
-      background: rgba(0,0,0,0.2);
+      background: rgba(0, 0, 0, 0.3);
+      border-color: var(--session-primary-color);
+      box-shadow: 0 0 10px var(--glow-color);
   }
-  input.marks-input, input.credits-input {
-    width: 50px;
-    text-align: center;
-    font-size: 1rem;
-    padding: 6px;
-    border-radius: 8px;
+  
+  /* Custom Adjuster and input elements */
+  .row-progress-container {
+    width: 100%;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 6px;
+  }
+  .row-progress-bar {
+    width: 0%;
+    height: 100%;
+    background-color: var(--session-primary-color);
+    transition: width 0.3s ease, background-color 0.3s ease;
+  }
+
+  .number-control {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.25);
     border: 1px solid var(--border-color);
-    outline: none;
+    border-radius: 12px;
+    overflow: hidden;
+    padding: 2px;
+    transition: var(--transition-smooth);
+    margin: 0 auto;
+  }
+  .number-control:focus-within {
+    border-color: var(--session-primary-color);
+    box-shadow: 0 0 10px var(--glow-color);
+  }
+  .ctrl-btn {
+    background: none;
+    border: none;
     color: var(--text-color);
-    background: rgba(0,0,0,0.2);
-    transition: border-color 0.3s, box-shadow 0.3s;
+    font-size: 1.1rem;
+    font-weight: 700;
+    width: 24px;
+    height: 28px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: var(--transition-smooth);
+    user-select: none;
+  }
+  .ctrl-btn:hover {
+    color: var(--session-primary-color);
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .ctrl-btn:active {
+    transform: scale(0.9);
+  }
+  
+  input.marks-input, input.credits-input {
+    width: 42px;
+    border: none !important;
+    background: none !important;
+    box-shadow: none !important;
+    text-align: center;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--text-color);
+    outline: none;
+    padding: 0;
+    margin: 0;
     -moz-appearance: textfield;
   }
   input.marks-input::-webkit-outer-spin-button,
@@ -368,105 +557,268 @@
     -webkit-appearance: none;
     margin: 0;
   }
-  input.marks-input:focus, input.credits-input:focus {
-    border-color: var(--session-primary-color);
-    box-shadow: 0 0 10px var(--session-primary-color);
+  .non-credit-row {
+    opacity: 0.7;
+    transition: var(--transition-smooth);
   }
-  .external-disabled input {
-      background-color: rgba(0,0,0,0.4) !important;
-      cursor: not-allowed;
+  .non-credit-row .credit-points-cell,
+  .non-credit-row .credits-cell,
+  .non-credit-row .credits-input {
+    text-decoration: line-through;
+    color: var(--text-secondary-color) !important;
+  }
+  .calc-legend {
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--text-secondary-color);
+    margin-top: 16px;
+    margin-bottom: 8px;
+    font-weight: 500;
+    opacity: 0.8;
+  }
+
+  .cgpa-row-input {
+    width: 60px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.15);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-weight: 700;
+    color: var(--text-color);
+    outline: none;
+    transition: var(--transition-smooth);
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+    -moz-appearance: textfield;
+  }
+  .cgpa-row-input::-webkit-outer-spin-button,
+  .cgpa-row-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  .cgpa-row-input:focus {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: var(--session-primary-color);
+    box-shadow: 0 0 10px var(--glow-color);
+  }
+
+  #cgpaScreen .table-wrapper {
+    max-width: 650px;
+    margin: 0 auto;
+  }
+  #cgpaTable {
+    min-width: unset !important;
+  }
+
+  #calculationScreen .table-wrapper {
+    max-width: 850px;
+    margin: 0 auto;
+  }
+  #subjectTable {
+    min-width: unset !important;
   }
 
   .toggle-switch {
     position: relative; display: inline-block;
-    width: 50px; height: 28px; flex-shrink: 0;
+    width: 48px; height: 26px; flex-shrink: 0;
   }
   .toggle-switch input { opacity: 0; width: 0; height: 0; }
   .slider {
     position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: rgba(0,0,0,0.3);
-    transition: .4s; border-radius: 28px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: var(--transition-smooth); border-radius: 26px;
   }
   .slider:before {
-    position: absolute; content: ""; height: 20px; width: 20px;
-    left: 4px; bottom: 4px; background-color: white;
-    transition: .4s; border-radius: 50%;
+    position: absolute; content: ""; height: 18px; width: 18px;
+    left: 3px; bottom: 3px; background-color: white;
+    transition: var(--transition-smooth); border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
   }
-  input:checked + .slider { background-color: var(--session-primary-color); }
+  input:checked + .slider { background-color: var(--session-primary-color); border-color: transparent; box-shadow: 0 0 10px var(--glow-color); }
   input:checked + .slider:before { transform: translateX(22px); }
 
-  #addSubjectBtn, #calculateBtn {
-    margin: 20px auto 10px auto;
-    background: var(--session-primary-color);
-    color: var(--bg-color);
+  #addSubjectBtn, #calculateBtn, #calculateCgpaBtn {
+    margin: 25px auto 10px auto;
+    background: linear-gradient(135deg, var(--session-primary-color), var(--session-secondary-color));
+    color: #0b0b1a;
     border: none;
-    padding: 14px 45px;
-    font-size: 1.3rem;
-    font-weight: 700;
+    padding: 16px 50px;
+    font-size: 1.25rem;
+    font-weight: 800;
     border-radius: 50px;
     cursor: pointer;
     display: block;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    transition: var(--transition-smooth);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+    font-family: var(--font-display);
+    letter-spacing: 0.5px;
   }
   #addSubjectBtn:hover, #calculateBtn:hover {
-    transform: scale(1.05);
-    box-shadow: 0 8px 30px var(--session-primary-color);
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 15px 35px var(--glow-color);
+  }
+  #addSubjectBtn:active, #calculateBtn:active {
+    transform: translateY(-1px) scale(1.0);
   }
 
-  #sgpaResult {
-    max-width: 900px;
-    margin: 20px auto 40px auto;
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--text-color);
-    text-align: center;
-    min-height: 80px;
-    padding: 15px;
+  #sgpaResult, #cgpaResult {
+    max-width: 950px;
+    margin: 30px auto 40px auto;
     background: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 15px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    display: flex;
+    border-radius: 24px;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    display: none;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     position: relative;
-    gap: 15px;
+    gap: 20px;
+    padding: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+    box-sizing: border-box;
+    width: 100%;
   }
 
-  .reveal-capsule {
-    width: 10px;
-    height: 80px;
-    background-color: var(--session-primary-color);
-    border-radius: 5px;
-    animation: stretch-capsule 1.5s ease-in-out forwards;
+  .result-gauge-container {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    margin: 10px auto;
   }
-  @keyframes stretch-capsule {
-    0% { transform: scaleY(0); }
-    40% { transform: scaleY(1.2); }
-    60% { transform: scaleY(1); }
-    100% { transform: scale(0); opacity: 0; }
+  .result-gauge {
+    width: 100%;
+    height: 100%;
+    transform: rotate(-90deg);
   }
-  .sgpa-text-reveal {
+  .result-gauge circle {
+    fill: none;
+    stroke-width: 8;
+  }
+  .result-gauge .gauge-bg {
+    stroke: rgba(255, 255, 255, 0.05);
+  }
+  .result-gauge .gauge-fill {
+    stroke: url(#gaugeGradient);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1.8s cubic-bezier(0.1, 1, 0.1, 1);
+  }
+  .gauge-text-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .gauge-value {
+    font-size: 2.2rem;
+    font-weight: 800;
+    font-family: var(--font-display);
+    color: #fff;
+    line-height: 1;
+  }
+  .gauge-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-secondary-color);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: 4px;
+  }
+  .performance-badge {
+    background: linear-gradient(135deg, var(--session-primary-color), var(--session-secondary-color));
+    color: #0b0b1a;
+    font-weight: 800;
+    font-size: 0.95rem;
+    padding: 6px 18px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px var(--glow-color);
+    letter-spacing: 0.5px;
     opacity: 0;
-    transform: scale(0.8);
-    animation: reveal-text 0.5s 1.3s ease-out forwards;
-  }
-  @keyframes reveal-text {
-    to { opacity: 1; transform: scale(1); }
+    transform: translateY(10px);
+    animation: fadeInUp 0.5s 1.2s forwards cubic-bezier(0.16, 1, 0.3, 1);
   }
   
   #downloadBtn {
-      font-size: 0.9rem;
-      padding: 8px 20px;
-      margin-top: 10px;
-      background: var(--card-bg);
-      border: 1px solid var(--border-color);
-      color: var(--session-primary-color);
-      opacity: 0;
-      animation: fadeInUp 0.5s 1.8s forwards;
+    font-size: 1rem;
+    padding: 12px 36px;
+    margin-top: 10px;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    color: var(--session-primary-color);
+    border-radius: 50px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    transition: var(--transition-smooth);
+    opacity: 0;
+    animation: fadeInUp 0.5s 1.5s forwards cubic-bezier(0.16, 1, 0.3, 1);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+  #downloadBtn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--session-primary-color);
+    box-shadow: 0 6px 20px rgba(0, 245, 212, 0.15);
+    color: #fff;
+    transform: translateY(-2px);
+  }
+  #downloadBtn svg {
+    width: 18px;
+    height: 18px;
+    stroke: currentColor;
+    stroke-width: 2.5;
+    fill: none;
+  }
+
+  /* Toast Notification Container */
+  .toast-container {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: none;
+  }
+  .toast {
+    background: rgba(231, 76, 60, 0.2);
+    border: 1px solid rgba(231, 76, 60, 0.4);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    color: #fce4e4;
+    padding: 12px 24px;
+    border-radius: 16px;
+    font-weight: 600;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    animation: slideDownFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    pointer-events: auto;
+    font-family: var(--font-body);
+    font-size: 0.95rem;
+  }
+  .toast svg {
+    width: 20px;
+    height: 20px;
+    stroke: #ff6b6b;
+    stroke-width: 2.5;
+    fill: none;
+    flex-shrink: 0;
+  }
+  @keyframes slideDownFadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
   }
 
   @media (max-width: 768px) {
@@ -485,51 +837,107 @@
 </head>
 <body>
 
-<div class="background-shapes">
-    <div class="shape shape1"></div>
-    <div class="shape shape2"></div>
-    <div class="shape shape3"></div>
+<div class="theme-switcher">
+    <button class="theme-btn active" data-theme="cyberpunk" style="background: #00f5d4;" title="Cyberpunk Neon"></button>
+    <button class="theme-btn" data-theme="sunset" style="background: #ff6b6b;" title="Sunset Glow"></button>
+    <button class="theme-btn" data-theme="emerald" style="background: #00f5a0;" title="Emerald Forest"></button>
+    <button class="theme-btn" data-theme="aurora" style="background: #00d2ff;" title="Arctic Aurora"></button>
 </div>
+
+<canvas id="particleCanvas"></canvas>
+<canvas id="confettiCanvas"></canvas>
+<div class="toast-container" id="toastContainer"></div>
+
+<svg style="position: absolute; width: 0; height: 0;" width="0" height="0" version="1.1" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="var(--session-primary-color)" />
+      <stop offset="100%" stop-color="var(--session-secondary-color)" />
+    </linearGradient>
+  </defs>
+</svg>
 
 <div id="welcomeScreen" class="screen" style="display: flex;">
   <div>
     <h1>SGPA Calculator</h1>
-    <p class="welcome-hint">Click anywhere to begin</p>
+    <p class="welcome-hint">
+      Get Started
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path d="M5 12h14M12 5l7 7-7 7" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </p>
   </div>
   <canvas id="circleCanvas" width="200" height="200"></canvas>
 </div>
 
 <div id="choiceScreen" class="screen">
-    <h2>Select</h2>
+    <h2>Select Path</h2>
     <div id="choiceGrid">
         <div id="preloadedBtn" class="choice-card">
-            <svg class="squiggle-svg" viewBox="0 0 300 400" preserveAspectRatio="none">
-                <path d="M 10 10 C 50 20, 250 0, 290 10 S 270 40, 290 50 S 250 80, 290 90 L 290 390 C 250 380, 50 400, 10 390 S 30 360, 10 350 S 50 320, 10 310 L 10 10 Z"/>
-            </svg>
             <div class="card-header">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8.5 18.5H4V15H2v3.5A1.5 1.5 0 0 0 3.5 20H8.5v-1.5zM18.5 20H20V15h-1.5v3.5A1.5 1.5 0 0 1 17 20h-3.5v1.5H17a3 3 0 0 0 3-3V15h-1.5v3.5zM8.5 5.5H4V9H2V5.5A1.5 1.5 0 0 1 3.5 4H8.5V2H5a3 3 0 0 0-3 3v3.5h1.5V5.5zM15.5 4H17a1.5 1.5 0 0 1 1.5 1.5V9h1.5V5.5a3 3 0 0 0-3-3H12v1.5h3.5V4zM9 9h6v6H9z"></path></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                  <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                </svg>
             </div>
             <div class="card-body">
-                <h3>Preloaded</h3>
-                <p>For VTU ECE students with a fixed curriculum.</p>
+                <h3>Preloaded Subjects</h3>
+                <p>For VTU ECE students. Instantly load pre-programmed curriculum parameters, subjects, and specific credits.</p>
             </div>
             <div class="card-footer">
-                <button class="card-action-btn">Select &rarr;</button>
+                <button class="card-action-btn" aria-label="Select Preloaded Path">
+                    Select
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
             </div>
         </div>
         <div id="customBtn" class="choice-card">
-            <svg class="squiggle-svg" viewBox="0 0 300 400" preserveAspectRatio="none">
-                <path d="M 10 10 C 50 20, 250 0, 290 10 S 270 40, 290 50 S 250 80, 290 90 L 290 390 C 250 380, 50 400, 10 390 S 30 360, 10 350 S 50 320, 10 310 L 10 10 Z"/>
-            </svg>
              <div class="card-header">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M19.48 12.04a6.45 6.45 0 0 0-5.44-6.41 6.51 6.51 0 0 0-7.12 2.3 6.51 6.51 0 0 0 2.3 7.12 6.51 6.51 0 0 0 7.12-2.3 6.45 6.45 0 0 0 3.14-3.71zm-6.52 5.16a4.5 4.5 0 1 1 4.5-4.5 4.5 4.5 0 0 1-4.5 4.5z"></path><path d="M19.21 15.33a1 1 0 0 0-1.34.45l-.43.75a1 1 0 0 0 .45 1.34l.75.43a1 1 0 0 0 1.34-.45l.43-.75a1 1 0 0 0-.45-1.34zM4.79 8.67a1 1 0 0 0-1.34.45l-.43.75a1 1 0 0 0 .45 1.34l.75.43a1 1 0 0 0 1.34-.45l.43-.75a1 1 0 0 0-.45-1.34zM12 2a1 1 0 0 0-1 1v1.5a1 1 0 0 0 2 0V3a1 1 0 0 0-1-1zM3 11H1.5a1 1 0 0 0 0 2H3a1 1 0 0 0 0-2zM21 11h-1.5a1 1 0 0 0 0 2H21a1 1 0 0 0 0-2zM12 19a1 1 0 0 0-1 1v1.5a1 1 0 0 0 2 0V20a1 1 0 0 0-1-1z"></path></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="4" y1="21" x2="4" y2="14"/>
+                  <line x1="4" y1="10" x2="4" y2="3"/>
+                  <line x1="12" y1="21" x2="12" y2="12"/>
+                  <line x1="12" y1="8" x2="12" y2="3"/>
+                  <line x1="20" y1="21" x2="20" y2="16"/>
+                  <line x1="20" y1="12" x2="20" y2="3"/>
+                  <line x1="1" y1="14" x2="7" y2="14"/>
+                  <line x1="9" y1="8" x2="15" y2="8"/>
+                  <line x1="17" y1="16" x2="23" y2="16"/>
+                </svg>
             </div>
             <div class="card-body">
-                <h3>Custom</h3>
-                <p>Build your own table for any branch or university.</p>
+                <h3>Custom Calculator</h3>
+                <p>Build your own dynamic table. Perfect for any semester, different engineering branches, or custom curriculums.</p>
             </div>
              <div class="card-footer">
-                <button class="card-action-btn">Create &rarr;</button>
+                <button class="card-action-btn" aria-label="Create Custom Path">
+                    Create
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <div id="cgpaBtn" class="choice-card">
+             <div class="card-header">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+            </div>
+            <div class="card-body">
+                <h3>CGPA Calculator</h3>
+                <p>Compute cumulative GPA across semesters. Input custom credits and SGPA for each semester to compute accurate weighted CGPA.</p>
+            </div>
+             <div class="card-footer">
+                <button class="card-action-btn" aria-label="Open CGPA Calculator">
+                    Calculate
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;">
+                      <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </button>
             </div>
         </div>
     </div>
@@ -583,9 +991,47 @@
             </tfoot>
         </table>
     </div>
+    <p class="calc-legend" style="line-height: 1.6; max-width: 700px; margin: 16px auto 8px auto;">
+        💡 <strong>Audit / Non-Credit Toggle:</strong> Switch ON to designate a subject as Non-Credit. Its credits and grade will be excluded from the SGPA calculation.<br>
+        📝 <strong>Smart Marks Input:</strong> You can enter marks out of 100 for Internals and Externals. Scores above 50 are automatically divided by 2 and scaled to 50 in real time.
+    </p>
     <button id="addSubjectBtn" style="display:none;">+ Add Subject</button>
     <button id="calculateBtn" style="display:none;">Calculate SGPA</button>
     <div id="sgpaResult"></div>
+</div>
+
+<div id="cgpaScreen" class="screen">
+    <div class="calc-header">
+        <button id="backFromCgpa" aria-label="Go back">&larr;</button>
+        <h2>CGPA Calculator</h2>
+        <div style="width: 50px;"></div> <!-- Spacer -->
+    </div>
+    <div class="table-wrapper">
+        <table id="cgpaTable">
+            <thead>
+            <tr>
+                <th>Semester</th>
+                <th>SGPA Earned (Sᵢ)</th>
+                <th>Total Credits (Cᵢ)</th>
+                <th>Credit Points (Sᵢ × Cᵢ)</th>
+            </tr>
+            </thead>
+            <tbody id="cgpaTbody"></tbody>
+            <tfoot>
+                <tr>
+                    <td><strong>Total Summary</strong></td>
+                    <td></td>
+                    <td id="cgpaTotalCreditsCell" style="font-weight: 700;">0</td>
+                    <td id="cgpaTotalPointsCell" style="font-weight: 700;">0.00</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <p class="calc-legend" style="line-height: 1.6; max-width: 700px; margin: 16px auto 8px auto;">
+        📝 <strong>Weighted Calculation:</strong> CGPA is computed using the official credit-weighted formula: Σ(Sᵢ × Cᵢ) / Σ Cᵢ.
+    </p>
+    <button id="calculateCgpaBtn">Calculate CGPA</button>
+    <div id="cgpaResult"></div>
 </div>
 
 <script>
@@ -594,12 +1040,15 @@
   const choiceScreen = document.getElementById('choiceScreen');
   const semesterSelectionScreen = document.getElementById('semesterSelectionScreen');
   const calculationScreen = document.getElementById('calculationScreen');
+  const cgpaScreen = document.getElementById('cgpaScreen');
   
   const preloadedBtn = document.getElementById('preloadedBtn');
   const customBtn = document.getElementById('customBtn');
+  const cgpaBtn = document.getElementById('cgpaBtn');
   const semesterGrid = document.getElementById('semesterGrid');
   const backToChoice = document.getElementById('backToChoice');
   const backButton = document.getElementById('backButton');
+  const backFromCgpa = document.getElementById('backFromCgpa');
   
   const semesterTitle = document.getElementById('semesterTitle');
   const subjectTable = document.getElementById('subjectTable');
@@ -609,9 +1058,122 @@
   const sgpaResult = document.getElementById('sgpaResult');
   const totalCreditsCell = document.getElementById('totalCreditsCell');
   const totalCreditPointsCell = document.getElementById('totalCreditPointsCell');
+
+  const calculateCgpaBtn = document.getElementById('calculateCgpaBtn');
+  const cgpaResult = document.getElementById('cgpaResult');
   
   const canvas = document.getElementById('circleCanvas');
   const ctx = canvas.getContext('2d');
+  
+  const particleCanvas = document.getElementById('particleCanvas');
+  const pCtx = particleCanvas.getContext('2d');
+
+  const confettiCanvas = document.getElementById('confettiCanvas');
+  const cCtx = confettiCanvas.getContext('2d');
+
+  // --- Particle Background Simulation ---
+  let particles = [];
+  const maxParticles = 65;
+  let mouse = { x: null, y: null, radius: 150 };
+
+  window.addEventListener('mousemove', (e) => {
+    mouse.x = e.x;
+    mouse.y = e.y;
+  });
+
+  window.addEventListener('mouseleave', () => {
+    mouse.x = null;
+    mouse.y = null;
+  });
+
+  class Particle {
+    constructor() {
+      this.reset();
+    }
+
+    reset() {
+      this.x = Math.random() * particleCanvas.width;
+      this.y = Math.random() * particleCanvas.height;
+      this.vx = (Math.random() - 0.5) * 0.6;
+      this.vy = (Math.random() - 0.5) * 0.6;
+      this.radius = Math.random() * 2.5 + 1.5;
+    }
+
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+
+      if (this.x < 0 || this.x > particleCanvas.width) this.vx = -this.vx;
+      if (this.y < 0 || this.y > particleCanvas.height) this.vy = -this.vy;
+
+      if (mouse.x !== null && mouse.y !== null) {
+        let dx = this.x - mouse.x;
+        let dy = this.y - mouse.y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist < mouse.radius) {
+          let force = (mouse.radius - dist) / mouse.radius;
+          let angle = Math.atan2(dy, dx);
+          this.x += Math.cos(angle) * force * 1.5;
+          this.y += Math.sin(angle) * force * 1.5;
+        }
+      }
+    }
+
+    draw() {
+      const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--session-primary-color').trim();
+      pCtx.fillStyle = primaryColor;
+      pCtx.beginPath();
+      pCtx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+      pCtx.fill();
+    }
+  }
+
+  function initParticles() {
+    particleCanvas.width = window.innerWidth;
+    particleCanvas.height = window.innerHeight;
+    particles = [];
+    for (let i = 0; i < maxParticles; i++) {
+      particles.push(new Particle());
+    }
+  }
+
+  function animateParticles() {
+    pCtx.clearRect(0, 0, particleCanvas.width, particleCanvas.height);
+    const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--session-primary-color').trim();
+    
+    particles.forEach(p => {
+      p.update();
+      p.draw();
+    });
+
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        let dx = particles[i].x - particles[j].x;
+        let dy = particles[i].y - particles[j].y;
+        let dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < 110) {
+          let alpha = (110 - dist) / 110 * 0.15;
+          pCtx.strokeStyle = primaryColor;
+          pCtx.globalAlpha = alpha;
+          pCtx.lineWidth = 0.8;
+          pCtx.beginPath();
+          pCtx.moveTo(particles[i].x, particles[i].y);
+          pCtx.lineTo(particles[j].x, particles[j].y);
+          pCtx.stroke();
+          pCtx.globalAlpha = 1.0;
+        }
+      }
+    }
+    requestAnimationFrame(animateParticles);
+  }
+
+  window.addEventListener('resize', () => {
+    initParticles();
+  });
+
+  initParticles();
+  animateParticles();
 
   // --- Global State ---
   let currentMode = ''; // 'preloaded' or 'custom'
@@ -626,10 +1188,93 @@
     5: [{ code: "BEC501", name: "INFORMATION THEORY & CODING", credits: 3 }, { code: "BEC502", name: "DIGITAL SIGNAL PROCESSING", credits: 4 }, { code: "BEC503", name: "DIGITAL COMMUNICATION", credits: 4 }, { code: "BECL504", name: "DIGITAL COMMUNICATION LAB", credits: 1 }, { code: "BEC586", name: "MINI PROJECT", credits: 1 }, { code: "BRMK557", name: "RESEARCH METHODOLOGY & IPR", credits: 3 }, { code: "BESK508", name: "ENVIRONMENTAL STUDIES", credits: 2 }, { code: "BNSK559", name: "NATIONAL SERVICE SCHEME", credits: 1 }, { code: "BEC515B", name: "DSP FOR AI & ML", credits: 3 }],
     6: [{ code: "BEC601", name: "EMBEDDED SYSTEM DESIGN", credits: 4 }, { code: "BEC602", name: "VLSI DESIGN AND TESTING", credits: 4 }, { code: "BEC685", name: "PROJECT PHASE 1", credits: 2 }, { code: "BECL606", name: "VLSI DESIGN AND TESTING LAB", credits: 1 }, { code: "BNSK658", name: "NATIONAL SERVICE SCHEME", credits: 0 }, { code: "BIKS609", name: "INDIAN KNOWLEDGE SYSTEM", credits: 0 }, { code: "BCS654A", name: "INTRODUCTION TO DATA STRUCTURES", credits: 3 }, { code: "BEC613B", name: "DATA SECURITY", credits: 3 }, { code: "BECL657D", name: "PYTHON FOR ML APPLICATIONS", credits: 1 }],
     7: [{ code: "BEC701", name: "MICROWAVE ENGINEERING AND ANTENNA THEORY", credits: 4 }, { code: "BEC702", name: "COMPUTER NETWORKS AND PROTOCOLS", credits: 4 }, { code: "BEC703", name: "WIRELESS COMMUNICATION SYSTEMS", credits: 4 }, { code: "BEC714B", name: "COMPUTER AND NETWORK SECURITY", credits: 3 }, { code: "BCV755B", name: "OPEN ELECTIVE", credits: 3 }, { code: "BEC786", name: "PROJECT PHASE II", credits: 6 }, ],
-    8: []
+    8: [{code: "BEC801", name: "PROFESSIONAL ELECTIVE COURSE", credits: 3 },{code: "BEC802", name: "OPEN ELECTIVE COURSE", credits: 3 },{code: "BINT803B", name: "INDUSTRY INTERNSHIP", credits: 10 }]
   };
 
   // --- Functions ---
+  
+  // Custom Glass Toast Alert
+  function showToast(msg) {
+    const container = document.getElementById('toastContainer');
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <circle cx="12" cy="12" r="10"></circle>
+        <line x1="12" y1="8" x2="12" y2="12"></line>
+        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+      </svg>
+      <span>${msg}</span>
+    `;
+    container.appendChild(toast);
+    
+    setTimeout(() => {
+      toast.style.animation = 'slideDownFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) reverse forwards';
+      setTimeout(() => toast.remove(), 400);
+    }, 4000);
+  }
+
+  // Celebration Confetti System
+  let confettiParticles = [];
+  let confettiAnimId;
+
+  class Confetti {
+    constructor() {
+      this.x = Math.random() * confettiCanvas.width;
+      this.y = Math.random() * -30 - 15;
+      this.size = Math.random() * 8 + 6;
+      this.color = colors[Math.floor(Math.random() * colors.length)];
+      this.vx = (Math.random() - 0.5) * 4;
+      this.vy = Math.random() * 5 + 3;
+      this.rotation = Math.random() * 360;
+      this.rotationSpeed = (Math.random() - 0.5) * 10;
+    }
+    
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      this.rotation += this.rotationSpeed;
+    }
+
+    draw() {
+      cCtx.save();
+      cCtx.translate(this.x, this.y);
+      cCtx.rotate(this.rotation * Math.PI / 180);
+      cCtx.fillStyle = this.color;
+      cCtx.fillRect(-this.size/2, -this.size/2, this.size, this.size);
+      cCtx.restore();
+    }
+  }
+
+  function startConfetti() {
+    confettiCanvas.width = window.innerWidth;
+    confettiCanvas.height = window.innerHeight;
+    confettiParticles = [];
+    for(let i = 0; i < 180; i++) {
+      setTimeout(() => {
+        confettiParticles.push(new Confetti());
+      }, Math.random() * 2500);
+    }
+    if (confettiAnimId) cancelAnimationFrame(confettiAnimId);
+    animateConfetti();
+  }
+
+  function animateConfetti() {
+    cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    confettiParticles.forEach((p, idx) => {
+      p.update();
+      p.draw();
+      if (p.y > confettiCanvas.height || p.x < 0 || p.x > confettiCanvas.width) {
+        confettiParticles.splice(idx, 1);
+      }
+    });
+    
+    if (confettiParticles.length > 0) {
+      confettiAnimId = requestAnimationFrame(animateConfetti);
+    } else {
+      cCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    }
+  }
   
   function hexToHsl(H) {
     let r = 0, g = 0, b = 0;
@@ -657,15 +1302,83 @@
     return [h, s, l];
   }
 
+  const themesPreset = {
+    cyberpunk: {
+      primary: '#00f5d4',
+      secondary: '#9b5de5',
+      bg: '#0a0a16',
+      cardBg: 'rgba(16, 16, 35, 0.45)',
+      border: 'rgba(0, 245, 212, 0.12)',
+      glow: 'rgba(0, 245, 212, 0.25)',
+      textColor: '#f3f4f6',
+      textSecColor: 'rgba(243, 244, 246, 0.65)'
+    },
+    sunset: {
+      primary: '#ff6b6b',
+      secondary: '#ffbe0b',
+      bg: '#180d12',
+      cardBg: 'rgba(32, 16, 24, 0.45)',
+      border: 'rgba(255, 107, 107, 0.12)',
+      glow: 'rgba(255, 107, 107, 0.25)',
+      textColor: '#fff5f5',
+      textSecColor: 'rgba(255, 245, 245, 0.65)'
+    },
+    emerald: {
+      primary: '#00f5a0',
+      secondary: '#a8ff78',
+      bg: '#06120b',
+      cardBg: 'rgba(10, 25, 18, 0.45)',
+      border: 'rgba(0, 245, 160, 0.12)',
+      glow: 'rgba(0, 245, 160, 0.25)',
+      textColor: '#f5fff8',
+      textSecColor: 'rgba(245, 255, 248, 0.65)'
+    },
+    aurora: {
+      primary: '#00d2ff',
+      secondary: '#3a7bd5',
+      bg: '#041016',
+      cardBg: 'rgba(8, 24, 34, 0.45)',
+      border: 'rgba(0, 210, 255, 0.12)',
+      glow: 'rgba(0, 210, 255, 0.25)',
+      textColor: '#f0f9ff',
+      textSecColor: 'rgba(240, 249, 255, 0.65)'
+    }
+  };
+
+  function applyPresetTheme(themeName) {
+    const theme = themesPreset[themeName];
+    if (!theme) return;
+    document.documentElement.style.setProperty('--session-primary-color', theme.primary);
+    document.documentElement.style.setProperty('--session-secondary-color', theme.secondary);
+    document.documentElement.style.setProperty('--bg-color', theme.bg);
+    document.documentElement.style.setProperty('--card-bg', theme.cardBg);
+    document.documentElement.style.setProperty('--border-color', theme.border);
+    document.documentElement.style.setProperty('--text-color', theme.textColor);
+    document.documentElement.style.setProperty('--text-secondary-color', theme.textSecColor);
+    document.documentElement.style.setProperty('--glow-color', theme.glow);
+
+    // Update switcher active class
+    document.querySelectorAll('.theme-btn').forEach(btn => {
+      if (btn.dataset.theme === themeName) {
+        btn.classList.add('active');
+      } else {
+        btn.classList.remove('active');
+      }
+    });
+  }
+
   function generatePalette(baseColor) {
       const [h, s, l] = hexToHsl(baseColor);
+      const secondaryH = (h + 40) % 360;
       return {
           '--session-primary-color': `hsl(${h}, ${s}%, ${l}%)`,
-          '--bg-color': `hsl(${h}, ${s-10 > 0 ? s-10 : 0}%, 10%)`,
-          '--card-bg': `hsla(${h}, ${s-10 > 0 ? s-10 : 0}%, 15%, 0.5)`,
-          '--border-color': `hsla(${h}, ${s-10 > 0 ? s-10 : 0}%, 100%, 0.1)`,
-          '--text-color': `hsl(${h}, 15%, 90%)`,
-          '--text-secondary-color': `hsla(${h}, 10%, 85%, 0.7)`,
+          '--session-secondary-color': `hsl(${secondaryH}, ${s}%, ${l}%)`,
+          '--bg-color': `hsl(${h}, ${Math.max(5, s - 30)}%, 7%)`,
+          '--card-bg': `hsla(${h}, ${Math.max(5, s - 25)}%, 12%, 0.45)`,
+          '--border-color': `hsla(${h}, ${s}%, 100%, 0.08)`,
+          '--text-color': `hsl(${h}, 20%, 95%)`,
+          '--text-secondary-color': `hsla(${h}, 10%, 85%, 0.65)`,
+          '--glow-color': `hsla(${h}, ${s}%, ${l}%, 0.25)`
       };
   }
 
@@ -674,6 +1387,10 @@
       for (const [key, value] of Object.entries(palette)) {
           document.documentElement.style.setProperty(key, value);
       }
+      // Remove preset highlights
+      document.querySelectorAll('.theme-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
   }
 
   function switchScreen(screenToHide, screenToShow) {
@@ -717,190 +1434,644 @@
   }
   
   function addCustomRow() {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td class="subject-cell">
-          <input type="text" placeholder="Subject Name" class="subject-name-input">
-           <label class="toggle-switch">
-            <input class="external-toggle" type="checkbox" checked>
-            <span class="slider"></span>
-          </label>
-        </td>
-        <td><input class="credits-input" type="number" min="0" value="0"></td>
-        <td><input class="marks-input internal-marks" type="number" min="0" max="50" value="0"></td>
-        <td class="external-cell"><input class="marks-input external-marks" type="number" min="0" max="50" value="0"></td>
-        <td class="total-marks-cell">0</td>
-        <td class="grade-points-cell">0</td>
-        <td class="credit-points-cell">0</td>
-      `;
-      tbody.appendChild(row);
-  }
+       const row = document.createElement('tr');
+       row.innerHTML = `
+         <td class="subject-cell">
+           <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px; width: 100%;">
+             <input type="text" placeholder="Subject Name" class="subject-name-input">
+             <div class="row-progress-container">
+               <div class="row-progress-bar" style="width: 0%;"></div>
+             </div>
+           </div>
+           <label class="toggle-switch" title="Non-Credit / Audit Subject (Toggle ON to exclude from SGPA)">
+             <input class="non-credit-toggle" type="checkbox">
+             <span class="slider"></span>
+           </label>
+         </td>
+         <td>
+           <input class="cgpa-row-input credits-input" type="number" min="0" value="0" inputmode="numeric">
+         </td>
+         <td>
+           <input class="cgpa-row-input marks-input internal-marks" type="number" min="0" max="100" value="0" inputmode="numeric">
+         </td>
+         <td class="external-cell">
+           <input class="cgpa-row-input marks-input external-marks" type="number" min="0" max="100" value="0" inputmode="numeric">
+         </td>
+         <td class="total-marks-cell" style="font-weight: 700;">0</td>
+         <td class="grade-points-cell" style="font-weight: 700;">0</td>
+         <td class="credit-points-cell" style="font-weight: 700; color: var(--session-primary-color);">0</td>
+       `;
+       tbody.appendChild(row);
+       updateRowCalculations(row);
+   }
 
-  function loadSemesterSubjects(sem) {
-    tbody.innerHTML = '';
-    sgpaResult.innerHTML = '';
-    const subjects = semestersData[sem];
-    
-    if (!subjects || subjects.length === 0) {
-      subjectTable.style.display = 'none';
-      calculateBtn.style.display = 'none';
-      sgpaResult.textContent = 'Subjects for this semester are not available yet.';
-      return;
+   function loadSemesterSubjects(sem) {
+     tbody.innerHTML = '';
+     sgpaResult.innerHTML = '';
+     const subjects = semestersData[sem];
+     
+     if (!subjects || subjects.length === 0) {
+       subjectTable.style.display = 'none';
+       calculateBtn.style.display = 'none';
+       sgpaResult.textContent = 'Subjects for this semester are not available yet.';
+       return;
+     }
+
+     subjects.forEach(subj => {
+       const row = document.createElement('tr');
+       row.innerHTML = `
+         <td class="subject-cell">
+           <div style="flex-grow: 1; display: flex; flex-direction: column; gap: 4px;">
+             <span style="font-weight: 700;">${subj.name} (${subj.code})</span>
+             <div class="row-progress-container">
+               <div class="row-progress-bar" style="width: 0%;"></div>
+             </div>
+           </div>
+           <label class="toggle-switch" title="Non-Credit / Audit Subject (Toggle ON to exclude from SGPA)">
+             <input class="non-credit-toggle" type="checkbox">
+             <span class="slider"></span>
+           </label>
+         </td>
+         <td class="credits-cell" style="font-weight: 700;">${subj.credits}</td>
+         <td>
+           <input class="cgpa-row-input marks-input internal-marks" type="number" min="0" max="100" value="0" inputmode="numeric">
+         </td>
+         <td class="external-cell">
+           <input class="cgpa-row-input marks-input external-marks" type="number" min="0" max="100" value="0" inputmode="numeric">
+         </td>
+         <td class="total-marks-cell" style="font-weight: 700;">0</td>
+         <td class="grade-points-cell" style="font-weight: 700;">0</td>
+         <td class="credit-points-cell" style="font-weight: 700; color: var(--session-primary-color);">0</td>
+       `;
+       tbody.appendChild(row);
+       updateRowCalculations(row);
+     });
+     updateTableFooter();
+     subjectTable.style.display = 'table';
+     calculateBtn.style.display = 'block';
+   }
+
+   function marksToGradePoint(marks) {
+     if (marks > 100) marks = 100;
+     if (marks >= 90) return 10;
+     if (marks >= 80) return 9;
+     if (marks >= 70) return 8;
+     if (marks >= 60) return 7;
+     if (marks >= 50) return 6;
+     if (marks >= 40) return 5;
+     return 0;
+   }    function updateRowCalculations(row) {
+        const isNonCredit = row.querySelector('.non-credit-toggle')?.checked ?? false;
+        const internalMarks = Number(row.querySelector('.internal-marks').value);
+        const externalMarks = Number(row.querySelector('.external-marks').value);
+        
+        let credits;
+        const creditsCell = row.querySelector('.credits-cell');
+        const creditsInput = row.querySelector('.credits-input');
+        if(creditsInput) {
+            credits = Number(creditsInput.value);
+        } else {
+            credits = Number(creditsCell.textContent);
+        }
+        
+        const totalCell = row.querySelector('.total-marks-cell');
+        const gradePointsCell = row.querySelector('.grade-points-cell');
+        const creditPointsCell = row.querySelector('.credit-points-cell');
+        
+        const totalMarks = internalMarks + externalMarks;
+        const gradePoint = marksToGradePoint(totalMarks);
+        const creditPoints = isNonCredit ? 0 : (gradePoint * credits);
+ 
+        totalCell.textContent = totalMarks;
+        gradePointsCell.textContent = gradePoint;
+        creditPointsCell.textContent = creditPoints;
+
+        // Visual non-credit feedback: fade and apply line-through via class
+        if (isNonCredit) {
+            row.classList.add('non-credit-row');
+        } else {
+            row.classList.remove('non-credit-row');
+        }
+ 
+        // Dynamic Subject Grading Progress Bar
+        const progressBar = row.querySelector('.row-progress-bar');
+        if (progressBar) {
+            progressBar.style.width = `${totalMarks}%`;
+            if (totalMarks >= 90) {
+                progressBar.style.backgroundColor = 'var(--session-primary-color)';
+            } else if (totalMarks >= 70) {
+                progressBar.style.backgroundColor = 'var(--session-secondary-color)';
+            } else if (totalMarks >= 40) {
+                progressBar.style.backgroundColor = '#f1c40f';
+            } else {
+                progressBar.style.backgroundColor = '#e74c3c';
+            }
+        }
     }
+ 
+    function updateTableFooter() {
+        let totalCredits = 0;
+        let totalCreditPoints = 0;
+        const rows = tbody.querySelectorAll('tr');
+ 
+        rows.forEach(row => {
+            const isNonCredit = row.querySelector('.non-credit-toggle')?.checked ?? false;
+            if (isNonCredit) return; // Skip non-credit subjects from totals
+            
+            const creditsCell = row.querySelector('.credits-cell');
+            const creditsInput = row.querySelector('.credits-input');
+            if(creditsInput) {
+                totalCredits += Number(creditsInput.value);
+            } else {
+                totalCredits += Number(creditsCell.textContent);
+            }
+            totalCreditPoints += Number(row.querySelector('.credit-points-cell').textContent);
+        });
+ 
+        totalCreditsCell.textContent = totalCredits;
+        totalCreditPointsCell.textContent = totalCreditPoints;
+    }
+ 
+   function generateReportHTML(sgpa) {
+       const tableRows = [];
+       tbody.querySelectorAll('tr').forEach(row => {
+           const isNonCredit = row.querySelector('.non-credit-toggle')?.checked ?? false;
+           let subjectNameCell = row.querySelector('.subject-cell span')?.textContent || row.querySelector('.subject-name-input')?.value || 'N/A';
+           if (isNonCredit) {
+               subjectNameCell += ' (Non-Credit)';
+           }
+           const credits = isNonCredit ? '0' : (row.querySelector('.credits-cell')?.textContent || row.querySelector('.credits-input')?.value || '0');
+           const internal = row.querySelector('.internal-marks').value;
+           const external = row.querySelector('.external-marks').value;
+           const total = row.querySelector('.total-marks-cell').textContent;
+           const gradePts = row.querySelector('.grade-points-cell').textContent;
+           const creditPts = row.querySelector('.credit-points-cell').textContent;
+ 
+           const rowStyle = isNonCredit ? 'style="opacity: 0.6; text-decoration: line-through;"' : '';
+           const creditPtsColorStyle = isNonCredit ? 'style="font-weight: 700; color: rgba(243, 244, 246, 0.5);"' : 'style="font-weight: 700; color: #00f5d4;"';
 
-    subjects.forEach(subj => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td class="subject-cell">
-          <span>${subj.name} (${subj.code})</span>
-          <label class="toggle-switch">
-            <input class="external-toggle" type="checkbox" checked>
-            <span class="slider"></span>
-          </label>
-        </td>
-        <td class="credits-cell">${subj.credits}</td>
-        <td><input class="marks-input internal-marks" type="number" min="0" max="50" value="0"></td>
-        <td class="external-cell"><input class="marks-input external-marks" type="number" min="0" max="50" value="0"></td>
-        <td class="total-marks-cell">0</td>
-        <td class="grade-points-cell">0</td>
-        <td class="credit-points-cell">0</td>
-      `;
-      tbody.appendChild(row);
-      updateRowCalculations(row);
-    });
-    updateTableFooter();
-    subjectTable.style.display = 'table';
-    calculateBtn.style.display = 'block';
-  }
-
-  function marksToGradePoint(marks) {
-    if (marks > 100) marks = 100;
-    if (marks >= 90) return 10;
-    if (marks >= 80) return 9;
-    if (marks >= 70) return 8;
-    if (marks >= 60) return 7;
-    if (marks >= 50) return 6;
-    if (marks >= 40) return 5;
-    return 0;
-  }
-
-  function updateRowCalculations(row) {
-      const hasExternal = row.querySelector('.external-toggle')?.checked ?? true;
-      const internalMarks = Number(row.querySelector('.internal-marks').value);
-      const externalMarks = Number(row.querySelector('.external-marks').value);
-      
-      let credits;
-      const creditsCell = row.querySelector('.credits-cell');
-      const creditsInput = row.querySelector('.credits-input');
-      if(creditsInput) {
-          credits = Number(creditsInput.value);
-      } else {
-          credits = Number(creditsCell.textContent);
-      }
-      
-      const totalCell = row.querySelector('.total-marks-cell');
-      const gradePointsCell = row.querySelector('.grade-points-cell');
-      const creditPointsCell = row.querySelector('.credit-points-cell');
-      
-      let totalMarks = 0;
-      if (hasExternal) {
-          totalMarks = internalMarks + externalMarks;
-      } else {
-          totalMarks = internalMarks;
-      }
-      
-      const gradePoint = marksToGradePoint(totalMarks);
-      const creditPoints = gradePoint * credits;
-
-      totalCell.textContent = totalMarks;
-      gradePointsCell.textContent = gradePoint;
-      creditPointsCell.textContent = creditPoints;
-  }
-
-  function updateTableFooter() {
-      let totalCredits = 0;
-      let totalCreditPoints = 0;
-      const rows = tbody.querySelectorAll('tr');
-
-      rows.forEach(row => {
-          const creditsCell = row.querySelector('.credits-cell');
-          const creditsInput = row.querySelector('.credits-input');
-          if(creditsInput) {
-              totalCredits += Number(creditsInput.value);
-          } else {
-              totalCredits += Number(creditsCell.textContent);
-          }
-          totalCreditPoints += Number(row.querySelector('.credit-points-cell').textContent);
-      });
-
-      totalCreditsCell.textContent = totalCredits;
-      totalCreditPointsCell.textContent = totalCreditPoints;
-  }
-
-  function generateReportHTML(sgpa) {
-      const tableRows = [];
-      tbody.querySelectorAll('tr').forEach(row => {
-          const subjectNameCell = row.querySelector('.subject-cell span')?.textContent || row.querySelector('.subject-name-input')?.value || 'N/A';
-          const credits = row.querySelector('.credits-cell')?.textContent || row.querySelector('.credits-input')?.value || '0';
-          const internal = row.querySelector('.internal-marks').value;
-          const external = row.querySelector('.external-marks').value;
-          const total = row.querySelector('.total-marks-cell').textContent;
-          const gradePts = row.querySelector('.grade-points-cell').textContent;
-          const creditPts = row.querySelector('.credit-points-cell').textContent;
-
-          tableRows.push(`
-              <tr>
-                  <td>${subjectNameCell}</td>
-                  <td>${credits}</td>
-                  <td>${internal}</td>
-                  <td>${external}</td>
-                  <td>${total}</td>
-                  <td>${gradePts}</td>
-                  <td>${creditPts}</td>
-              </tr>
-          `);
-      });
+           tableRows.push(`
+               <tr ${rowStyle}>
+                   <td style="text-align: left; font-weight: 600; padding: 12px 16px;">${subjectNameCell}</td>
+                   <td>${credits}</td>
+                   <td>${internal}</td>
+                   <td>${external}</td>
+                   <td style="font-weight: 700;">${total}</td>
+                   <td>${gradePts}</td>
+                   <td ${creditPtsColorStyle}>${creditPts}</td>
+               </tr>
+           `);
+       });
       
       const totalCredits = totalCreditsCell.textContent;
       const totalCreditPoints = totalCreditPointsCell.textContent;
 
-      const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--session-primary-color');
-      const bgColor = getComputedStyle(document.documentElement).getPropertyValue('--bg-color');
-      const textColor = getComputedStyle(document.documentElement).getPropertyValue('--text-color');
+      let performance = 'Outstanding';
+      const numericSgpa = Number(sgpa) || 0;
+      if (numericSgpa < 5) performance = 'Fail';
+      else if (numericSgpa < 6.5) performance = 'Second Class';
+      else if (numericSgpa < 7.5) performance = 'First Class';
+      else if (numericSgpa < 8.5) performance = 'Distinction';
+      else if (numericSgpa < 9.5) performance = 'First Class with Distinction';
 
       return `
           <!DOCTYPE html>
           <html lang="en">
           <head>
               <meta charset="UTF-8">
-              <title>SGPA Report</title>
+              <title>SGPA Academic Transcript - ${semesterTitle.textContent}</title>
+              <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
               <style>
-                  body { font-family: sans-serif; background-color: ${bgColor}; color: ${textColor}; padding: 20px; }
-                  h1, h2 { text-align: center; color: ${primaryColor}; }
-                  table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-                  th, td { border: 1px solid ${primaryColor}; padding: 8px; text-align: center; }
-                  th { background-color: rgba(0,0,0,0.2); }
-                  tfoot { font-weight: bold; }
+                  body {
+                      font-family: 'Poppins', sans-serif;
+                      background-color: #0b0b1a;
+                      color: #f3f4f6;
+                      padding: 40px;
+                      display: flex;
+                      justify-content: center;
+                      min-height: 100vh;
+                      box-sizing: border-box;
+                  }
+                  .transcript-card {
+                      background: rgba(255, 255, 255, 0.03);
+                      border: 1px solid rgba(255, 255, 255, 0.08);
+                      border-radius: 24px;
+                      padding: 40px;
+                      width: 100%;
+                      max-width: 800px;
+                      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+                      position: relative;
+                  }
+                  .header {
+                      text-align: center;
+                      border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+                      padding-bottom: 25px;
+                      margin-bottom: 30px;
+                  }
+                  h1 {
+                      font-family: 'Outfit', sans-serif;
+                      font-size: 2.4rem;
+                      font-weight: 800;
+                      margin: 0;
+                      background: linear-gradient(135deg, #00f5d4, #9b5de5);
+                      -webkit-background-clip: text;
+                      -webkit-text-fill-color: transparent;
+                  }
+                  .subtitle {
+                      font-size: 1.1rem;
+                      color: rgba(243, 244, 246, 0.6);
+                      margin-top: 5px;
+                      text-transform: uppercase;
+                      letter-spacing: 1px;
+                      font-weight: 600;
+                  }
+                  table {
+                      width: 100%;
+                      border-collapse: collapse;
+                      margin-top: 20px;
+                      border-radius: 12px;
+                      overflow: hidden;
+                  }
+                  th, td {
+                      padding: 12px;
+                      text-align: center;
+                      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                  }
+                  th {
+                      background-color: rgba(255, 255, 255, 0.05);
+                      font-family: 'Outfit', sans-serif;
+                      font-weight: 700;
+                      text-transform: uppercase;
+                      font-size: 0.85rem;
+                      letter-spacing: 0.5px;
+                  }
+                  tfoot td {
+                      font-weight: 700;
+                      background: rgba(0, 0, 0, 0.2);
+                      border-top: 1px solid rgba(255, 255, 255, 0.08);
+                  }
+                  .results-summary {
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-top: 45px;
+                      background: rgba(0, 245, 212, 0.05);
+                      border: 1px solid rgba(0, 245, 212, 0.15);
+                      padding: 24px;
+                      border-radius: 16px;
+                  }
+                  .gpa-pill {
+                      display: flex;
+                      flex-direction: column;
+                      align-items: center;
+                  }
+                  .gpa-label {
+                      font-size: 0.85rem;
+                      text-transform: uppercase;
+                      color: rgba(243, 244, 246, 0.6);
+                      font-weight: 700;
+                      letter-spacing: 1px;
+                  }
+                  .gpa-val {
+                      font-size: 3rem;
+                      font-weight: 800;
+                      font-family: 'Outfit', sans-serif;
+                      color: #00f5d4;
+                      line-height: 1;
+                      margin-top: 4px;
+                  }
+                  .perform-text {
+                      text-align: right;
+                  }
+                  .perform-lbl {
+                      font-size: 0.85rem;
+                      color: rgba(243, 244, 246, 0.6);
+                      font-weight: 600;
+                  }
+                  .perform-val {
+                      font-size: 1.4rem;
+                      font-weight: 700;
+                      color: #fff;
+                      margin-top: 4px;
+                  }
+
+                  @media print {
+                      body { background: #fff; color: #000; padding: 0; }
+                      .transcript-card { border: none; box-shadow: none; padding: 0; background: none; }
+                      h1 { -webkit-text-fill-color: initial; color: #000; }
+                      th { background-color: #eee; color: #000; }
+                      tfoot td { background: #f9f9f9; color: #000; }
+                      .results-summary { background: #f0f0f0; border-color: #ccc; }
+                      .gpa-val { color: #000; }
+                      .perform-val { color: #000; }
+                  }
               </style>
           </head>
           <body>
-              <h1>SGPA Report Card</h1>
-              <h2>${semesterTitle.textContent}</h2>
-              <table>
-                  <thead>
-                      <tr>
-                          <th>Subject</th><th>Credits</th><th>Internal</th><th>External</th>
-                          <th>Total</th><th>Grade Pts</th><th>Credit Pts</th>
-                      </tr>
-                  </thead>
-                  <tbody>${tableRows.join('')}</tbody>
-                  <tfoot>
-                      <tr>
-                          <td>Total</td><td>${totalCredits}</td><td colspan="4"></td><td>${totalCreditPoints}</td>
-                      </tr>
-                  </tfoot>
-              </table>
-              <h2>Final SGPA: ${sgpa}</h2>
+              <div class="transcript-card">
+                  <div class="header">
+                      <h1>ACADEMIC TRANSCRIPT</h1>
+                      <div class="subtitle">${semesterTitle.textContent} - VTU ECE</div>
+                  </div>
+                  <table>
+                      <thead>
+                          <tr>
+                              <th style="text-align: left; padding-left: 16px;">Subject</th>
+                              <th>Credits</th>
+                              <th>Internal</th>
+                              <th>External</th>
+                              <th>Total</th>
+                              <th>Grade Pts</th>
+                              <th>Credit Pts</th>
+                          </tr>
+                      </thead>
+                      <tbody>${tableRows.join('')}</tbody>
+                      <tfoot>
+                          <tr>
+                              <td style="text-align: left; padding-left: 16px;">Total Summary</td>
+                              <td>${totalCredits}</td>
+                              <td colspan="4"></td>
+                              <td>${totalCreditPoints}</td>
+                          </tr>
+                      </tfoot>
+                  </table>
+                  
+                  <div class="results-summary">
+                      <div class="gpa-pill">
+                          <span class="gpa-label">Semester SGPA</span>
+                          <span class="gpa-val">${sgpa}</span>
+                      </div>
+                      <div class="perform-text">
+                          <div class="perform-lbl">Performance Classification</div>
+                          <div class="perform-val">${performance}</div>
+                      </div>
+                  </div>
+              </div>
+          </body>
+          </html>
+      `;
+  }
+
+  // --- CGPA Calculation Functions ---
+  
+  function initCgpaCalculator() {
+      const cgpaTbody = document.getElementById('cgpaTbody');
+      cgpaTbody.innerHTML = '';
+      cgpaResult.style.display = 'none';
+      cgpaResult.innerHTML = '';
+      
+      const defaultCredits = [0, 0, 0, 0, 0, 0, 0, 0];
+      
+      for (let i = 1; i <= 8; i++) {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+              <td style="font-weight: 700; text-align: left; padding-left: 20px;">Semester ${i}</td>
+              <td>
+                  <input class="cgpa-row-input cgpa-sgpa-input" type="number" min="0" max="10" step="0.01" value="0.00" inputmode="decimal">
+              </td>
+              <td>
+                  <input class="cgpa-row-input cgpa-credits-input" type="number" min="0" max="35" value="${defaultCredits[i-1]}" inputmode="numeric">
+              </td>
+              <td class="cgpa-points-cell" style="font-weight: 700; color: var(--session-primary-color);">0.00</td>
+          `;
+          cgpaTbody.appendChild(row);
+          updateCgpaRowCalculations(row);
+      }
+      updateCgpaFooter();
+  }
+
+  function updateCgpaRowCalculations(row) {
+      const include = true;
+      const sgpa = Number(row.querySelector('.cgpa-sgpa-input').value) || 0;
+      const credits = Number(row.querySelector('.cgpa-credits-input').value) || 0;
+      
+      const pointsCell = row.querySelector('.cgpa-points-cell');
+      const points = sgpa * credits;
+      
+      pointsCell.textContent = points.toFixed(2);
+      
+      if (include) {
+          row.classList.remove('non-credit-row');
+      } else {
+          row.classList.add('non-credit-row');
+      }
+  }
+
+  function updateCgpaFooter() {
+      let totalCredits = 0;
+      let totalPoints = 0;
+      const rows = document.querySelectorAll('#cgpaTbody tr');
+      
+      rows.forEach(row => {
+          const credits = Number(row.querySelector('.cgpa-credits-input').value) || 0;
+          const points = Number(row.querySelector('.cgpa-points-cell').textContent) || 0;
+          totalCredits += credits;
+          totalPoints += points;
+      });
+      
+      document.getElementById('cgpaTotalCreditsCell').textContent = totalCredits;
+      document.getElementById('cgpaTotalPointsCell').textContent = totalPoints.toFixed(2);
+  }
+
+  function generateCgpaReportHTML(cgpa) {
+      const tableRows = [];
+      const rows = document.querySelectorAll('#cgpaTbody tr');
+      
+      rows.forEach((row, i) => {
+          const sgpa = row.querySelector('.cgpa-sgpa-input').value;
+          const credits = row.querySelector('.cgpa-credits-input').value;
+          const points = row.querySelector('.cgpa-points-cell').textContent;
+          
+          tableRows.push(`
+              <tr>
+                  <td style="text-align: left; font-weight: 600; padding: 12px 16px;">Semester ${i+1}</td>
+                  <td>${sgpa}</td>
+                  <td>${credits}</td>
+                  <td style="font-weight: 700; color: #00f5d4;">${points}</td>
+              </tr>
+          `);
+      });
+      
+      const totalCredits = document.getElementById('cgpaTotalCreditsCell').textContent;
+      const totalPoints = document.getElementById('cgpaTotalPointsCell').textContent;
+
+      let performance = 'Outstanding';
+      const numericCgpa = Number(cgpa) || 0;
+      if (numericCgpa < 5) performance = 'Fail';
+      else if (numericCgpa < 6.5) performance = 'Second Class';
+      else if (numericCgpa < 7.5) performance = 'First Class';
+      else if (numericCgpa < 8.5) performance = 'Distinction';
+      else if (numericCgpa < 9.5) performance = 'First Class with Distinction';
+
+      return `
+          <!DOCTYPE html>
+          <html lang="en">
+          <head>
+              <meta charset="UTF-8">
+              <title>CGPA Academic Transcript</title>
+              <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+              <style>
+                  body {
+                      font-family: 'Poppins', sans-serif;
+                      background-color: #0b0b1a;
+                      color: #f3f4f6;
+                      padding: 40px;
+                      display: flex;
+                      justify-content: center;
+                      min-height: 100vh;
+                      box-sizing: border-box;
+                  }
+                  .transcript-card {
+                      background: rgba(255, 255, 255, 0.03);
+                      border: 1px solid rgba(255, 255, 255, 0.08);
+                      border-radius: 24px;
+                      padding: 40px;
+                      width: 100%;
+                      max-width: 800px;
+                      box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+                      position: relative;
+                  }
+                  .header {
+                      text-align: center;
+                      border-bottom: 2px solid rgba(255, 255, 255, 0.08);
+                      padding-bottom: 25px;
+                      margin-bottom: 30px;
+                  }
+                  h1 {
+                      font-family: 'Outfit', sans-serif;
+                      font-size: 2.4rem;
+                      font-weight: 800;
+                      margin: 0;
+                      background: linear-gradient(135deg, #00f5d4, #9b5de5);
+                      -webkit-background-clip: text;
+                      -webkit-text-fill-color: transparent;
+                  }
+                  .subtitle {
+                      font-size: 1.1rem;
+                      color: rgba(243, 244, 246, 0.6);
+                      margin-top: 5px;
+                      text-transform: uppercase;
+                      letter-spacing: 1px;
+                      font-weight: 600;
+                  }
+                  table {
+                      width: 100%;
+                      border-collapse: collapse;
+                      margin-top: 20px;
+                      border-radius: 12px;
+                      overflow: hidden;
+                  }
+                  th, td {
+                      padding: 12px;
+                      text-align: center;
+                      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+                  }
+                  th {
+                      background-color: rgba(255, 255, 255, 0.05);
+                      font-family: 'Outfit', sans-serif;
+                      font-weight: 700;
+                      text-transform: uppercase;
+                      font-size: 0.85rem;
+                      letter-spacing: 0.5px;
+                  }
+                  tfoot td {
+                      font-weight: 700;
+                      background: rgba(0, 0, 0, 0.2);
+                      border-top: 1px solid rgba(255, 255, 255, 0.08);
+                  }
+                  .results-summary {
+                      display: flex;
+                      justify-content: space-between;
+                      align-items: center;
+                      margin-top: 45px;
+                      background: rgba(0, 245, 212, 0.05);
+                      border: 1px solid rgba(0, 245, 212, 0.15);
+                      padding: 24px;
+                      border-radius: 16px;
+                  }
+                  .gpa-pill {
+                      display: flex;
+                      flex-direction: column;
+                      align-items: center;
+                  }
+                  .gpa-label {
+                      font-size: 0.85rem;
+                      text-transform: uppercase;
+                      color: rgba(243, 244, 246, 0.6);
+                      font-weight: 700;
+                      letter-spacing: 1px;
+                  }
+                  .gpa-val {
+                      font-size: 3rem;
+                      font-weight: 800;
+                      font-family: 'Outfit', sans-serif;
+                      color: #00f5d4;
+                      line-height: 1;
+                      margin-top: 4px;
+                  }
+                  .perform-text {
+                      text-align: right;
+                  }
+                  .perform-lbl {
+                      font-size: 0.85rem;
+                      color: rgba(243, 244, 246, 0.6);
+                      font-weight: 600;
+                  }
+                  .perform-val {
+                      font-size: 1.4rem;
+                      font-weight: 700;
+                      color: #fff;
+                      margin-top: 4px;
+                  }
+                  @media print {
+                      body { background: #fff; color: #000; padding: 0; }
+                      .transcript-card { border: none; box-shadow: none; padding: 0; background: none; }
+                      h1 { -webkit-text-fill-color: initial; color: #000; }
+                      th { background-color: #eee; color: #000; }
+                      tfoot td { background: #f9f9f9; color: #000; }
+                      .results-summary { background: #f0f0f0; border-color: #ccc; }
+                      .gpa-val { color: #000; }
+                      .perform-val { color: #000; }
+                  }
+              </style>
+          </head>
+          <body>
+              <div class="transcript-card">
+                  <div class="header">
+                      <h1>CUMULATIVE ACADEMIC TRANSCRIPT</h1>
+                      <div class="subtitle">Visvesvaraya Technological University</div>
+                  </div>
+                  <table>
+                      <thead>
+                          <tr>
+                              <th style="text-align: left; padding-left: 16px;">Semester</th>
+                              <th>SGPA</th>
+                              <th>Credits</th>
+                              <th>Credit Points</th>
+                          </tr>
+                      </thead>
+                      <tbody>${tableRows.join('')}</tbody>
+                      <tfoot>
+                          <tr>
+                              <td style="text-align: left; padding-left: 16px;">Total Summary</td>
+                              <td></td>
+                              <td>${totalCredits}</td>
+                              <td>${totalPoints}</td>
+                          </tr>
+                      </tfoot>
+                  </table>
+                  
+                  <div class="results-summary">
+                      <div class="gpa-pill">
+                          <span class="gpa-label">Cumulative CGPA</span>
+                          <span class="gpa-val">${cgpa}</span>
+                      </div>
+                      <div class="perform-text">
+                          <div class="perform-lbl">Performance Classification</div>
+                          <div class="perform-val">${performance}</div>
+                      </div>
+                  </div>
+              </div>
           </body>
           </html>
       `;
@@ -924,12 +2095,22 @@
       currentMode = 'custom';
       switchScreen(choiceScreen, calculationScreen);
       semesterTitle.textContent = 'Custom Calculator';
-      tbody.innerHTML = ''; // Clear table
-      addCustomRow(); // Add one row to start
+      tbody.innerHTML = '';
+      addCustomRow();
       updateTableFooter();
       addSubjectBtn.style.display = 'block';
       calculateBtn.style.display = 'block';
       subjectTable.style.display = 'table';
+  });
+
+  cgpaBtn.addEventListener('click', () => {
+      currentMode = 'cgpa';
+      switchScreen(choiceScreen, cgpaScreen);
+      initCgpaCalculator();
+  });
+
+  backFromCgpa.addEventListener('click', () => {
+      switchScreen(cgpaScreen, choiceScreen);
   });
 
   addSubjectBtn.addEventListener('click', addCustomRow);
@@ -959,10 +2140,18 @@
   tbody.addEventListener('input', function(e) {
       if (e.target.classList.contains('marks-input') || e.target.classList.contains('credits-input')) {
           const input = e.target;
+          
           if(input.max) {
              const max = parseInt(input.max);
              if (Number(input.value) > max) {
                  input.value = max;
+             }
+          }
+
+          if (input.classList.contains('marks-input')) {
+             let val = Number(input.value);
+             if (val > 50) {
+                 input.value = Math.min(50, Math.round(val / 2));
              }
           }
           
@@ -972,27 +2161,45 @@
       }
   });
 
-  tbody.addEventListener('change', function(e) {
-    if (e.target.classList.contains('external-toggle')) {
-      const row = e.target.closest('tr');
-      const internalInput = row.querySelector('.internal-marks');
-      const externalCell = row.querySelector('.external-cell');
-      const externalInput = row.querySelector('.external-marks');
-
-      if (e.target.checked) {
-        internalInput.max = 50;
-        if (Number(internalInput.value) > 50) internalInput.value = 50;
-        externalInput.disabled = false;
-        externalCell.classList.remove('external-disabled');
-      } else {
-        internalInput.max = 100;
-        externalInput.disabled = true;
-        externalInput.value = 0;
-        externalCell.classList.add('external-disabled');
+  tbody.addEventListener('focusin', function(e) {
+      if (e.target.classList.contains('marks-input') || e.target.classList.contains('credits-input')) {
+          e.target.select();
       }
+  });
+
+  tbody.addEventListener('change', function(e) {
+    if (e.target.classList.contains('non-credit-toggle')) {
+      const row = e.target.closest('tr');
       updateRowCalculations(row);
       updateTableFooter();
     }
+  });
+
+  tbody.addEventListener('click', function(e) {
+    const btn = e.target.closest('.ctrl-btn');
+    if (!btn) return;
+    
+    const input = btn.parentNode.querySelector('input');
+    if (!input || input.disabled) return;
+    
+    let val = Number(input.value) || 0;
+    const min = input.hasAttribute('min') ? Number(input.getAttribute('min')) : 0;
+    let max = input.hasAttribute('max') ? Number(input.getAttribute('max')) : Infinity;
+    
+    if (input.classList.contains('marks-input')) {
+        max = 50; // Cap button increments at 50 since it is scaled
+    }
+    
+    if (btn.classList.contains('inc')) {
+      if (val < max) val++;
+    } else if (btn.classList.contains('dec')) {
+      if (val > min) val--;
+    }
+    
+    input.value = val;
+    
+    const event = new Event('input', { bubbles: true });
+    input.dispatchEvent(event);
   });
 
   calculateBtn.addEventListener('click', () => {
@@ -1000,68 +2207,305 @@
     const rows = tbody.querySelectorAll('tr');
     rows.forEach(row => {
         if (error) return;
-        const hasExternal = row.querySelector('.external-toggle')?.checked ?? true;
         const internalMarks = Number(row.querySelector('.internal-marks').value);
         const externalMarks = Number(row.querySelector('.external-marks').value);
 
-        if (hasExternal) {
-            if (internalMarks < 0 || internalMarks > 50 || externalMarks < 0 || externalMarks > 50) {
-                error = 'For subjects with externals, marks must be between 0 and 50.';
-            }
-        } else {
-            if (internalMarks < 0 || internalMarks > 100) {
-                error = 'For internal-only subjects, marks must be between 0 and 100.';
-            }
+        if (internalMarks < 0 || internalMarks > 50 || externalMarks < 0 || externalMarks > 50) {
+            error = 'Marks must be between 0 and 50 (marks above 50 are automatically scaled down).';
         }
     });
 
-    sgpaResult.innerHTML = '';
-
     if (error) {
-        sgpaResult.textContent = error;
+        showToast(error);
         return;
     }
     
-    const capsule = document.createElement('div');
-    capsule.className = 'reveal-capsule';
-    sgpaResult.appendChild(capsule);
+    sgpaResult.style.display = 'flex';
+    sgpaResult.innerHTML = '';
+    
+    const totalCredits = Number(totalCreditsCell.textContent);
+    const totalCreditPoints = Number(totalCreditPointsCell.textContent);
+    let sgpa = 0.00;
+    if (totalCredits !== 0) {
+        sgpa = totalCreditPoints / totalCredits;
+    }
+    
+    let badgeText = 'Outstanding!';
+    if (sgpa < 5.0) badgeText = 'Fail';
+    else if (sgpa < 6.5) badgeText = 'Second Class';
+    else if (sgpa < 7.5) badgeText = 'First Class';
+    else if (sgpa < 8.5) badgeText = 'Distinction';
+    else if (sgpa < 9.5) badgeText = 'Excellent (Distinction)';
+    else badgeText = 'Outstanding Rank 1';
+
+    const gaugeWrapper = document.createElement('div');
+    gaugeWrapper.className = 'result-gauge-container';
+    gaugeWrapper.innerHTML = `
+      <svg class="result-gauge" viewBox="0 0 120 120">
+        <circle class="gauge-bg" cx="60" cy="60" r="50"></circle>
+        <circle class="gauge-fill" id="gaugeCircle" cx="60" cy="60" r="50" style="stroke-dasharray: 314.16; stroke-dashoffset: 314.16;"></circle>
+      </svg>
+      <div class="gauge-text-container">
+        <span class="gauge-value" id="gaugeVal">0.00</span>
+        <span class="gauge-label">SGPA</span>
+      </div>
+    `;
+    
+    const performanceBadge = document.createElement('div');
+    performanceBadge.className = 'performance-badge';
+    performanceBadge.textContent = badgeText;
+    
+    const downloadBtn = document.createElement('button');
+    downloadBtn.id = 'downloadBtn';
+    downloadBtn.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Download Transcript
+    `;
+    
+    downloadBtn.onclick = () => {
+        const reportHtml = generateReportHTML(sgpa.toFixed(2));
+        const blob = new Blob([reportHtml], { type: 'text/html' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `SGPA_Report_${semesterTitle.textContent.replace(' ', '_')}.html`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    };
+
+    sgpaResult.appendChild(gaugeWrapper);
+    sgpaResult.appendChild(performanceBadge);
+    sgpaResult.appendChild(downloadBtn);
+
+    sgpaResult.scrollIntoView({ behavior: 'smooth' });
 
     setTimeout(() => {
-        const sgpaText = document.createElement('div');
-        sgpaText.className = 'sgpa-text-reveal';
-        const totalCredits = Number(totalCreditsCell.textContent);
-        const totalCreditPoints = Number(totalCreditPointsCell.textContent);
-        let sgpa = 'N/A';
-        if (totalCredits !== 0) {
-            sgpa = (totalCreditPoints / totalCredits).toFixed(2);
-        }
-        sgpaText.textContent = sgpa;
+        const circle = document.getElementById('gaugeCircle');
+        const offset = 314.16 * (1 - sgpa / 10.0);
+        circle.style.strokeDashoffset = offset;
         
-        const downloadBtn = document.createElement('button');
-        downloadBtn.textContent = 'Download Report';
-        downloadBtn.id = 'downloadBtn';
-        downloadBtn.className = 'sem-btn'; // Re-use styling
-        downloadBtn.onclick = () => {
-            const reportHtml = generateReportHTML(sgpa);
-            const blob = new Blob([reportHtml], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `SGPA_Report_${semesterTitle.textContent.replace(' ', '_')}.html`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        };
-
-        sgpaResult.innerHTML = '';
-        sgpaResult.appendChild(sgpaText);
-        sgpaResult.appendChild(downloadBtn);
-    }, 1500);
+        const valSpan = document.getElementById('gaugeVal');
+        let currentTick = 0.00;
+        const tickInterval = setInterval(() => {
+            currentTick += 0.07;
+            if (currentTick >= sgpa) {
+                currentTick = sgpa;
+                clearInterval(tickInterval);
+                
+                if (sgpa >= 8.5) {
+                    startConfetti();
+                }
+            }
+            valSpan.textContent = currentTick.toFixed(2);
+        }, 20);
+    }, 100);
   });
+
+  // --- CGPA Calculation Event Listeners ---
+  
+  const cgpaTbody = document.getElementById('cgpaTbody');
+  cgpaTbody.addEventListener('input', function(e) {
+      if (e.target.classList.contains('cgpa-sgpa-input') || e.target.classList.contains('cgpa-credits-input')) {
+          const input = e.target;
+          if(input.max) {
+             const max = Number(input.max);
+             if (Number(input.value) > max) {
+                 input.value = max;
+             }
+          }
+          const row = e.target.closest('tr');
+          updateCgpaRowCalculations(row);
+          updateCgpaFooter();
+      }
+  });
+
+  cgpaTbody.addEventListener('focusin', function(e) {
+      if (e.target.classList.contains('cgpa-sgpa-input') || e.target.classList.contains('cgpa-credits-input')) {
+          e.target.select();
+      }
+  });
+
+  cgpaTbody.addEventListener('click', function(e) {
+      const btn = e.target.closest('.ctrl-btn');
+      if (!btn) return;
+      
+      const input = btn.parentNode.querySelector('input');
+      if (!input || input.disabled) return;
+      
+      let val = Number(input.value) || 0;
+      const min = input.hasAttribute('min') ? Number(input.getAttribute('min')) : 0;
+      const max = input.hasAttribute('max') ? Number(input.getAttribute('max')) : Infinity;
+      const step = input.classList.contains('cgpa-sgpa-input') ? 0.1 : 1;
+      
+      if (btn.classList.contains('inc')) {
+        if (val < max) val += step;
+      } else if (btn.classList.contains('dec')) {
+        if (val > min) val -= step;
+      }
+      
+      input.value = input.classList.contains('cgpa-sgpa-input') ? val.toFixed(2) : Math.round(val);
+      
+      const event = new Event('input', { bubbles: true });
+      input.dispatchEvent(event);
+  });
+
+  calculateCgpaBtn.addEventListener('click', () => {
+      let error = null;
+      let activeSemesters = 0;
+      const rows = document.querySelectorAll('#cgpaTbody tr');
+      
+      rows.forEach((row, i) => {
+          if (error) return;
+          const sgpa = Number(row.querySelector('.cgpa-sgpa-input').value) || 0;
+          const credits = Number(row.querySelector('.cgpa-credits-input').value) || 0;
+          
+          if (credits > 0 || sgpa > 0) {
+              activeSemesters++;
+              if (sgpa < 0 || sgpa > 10) {
+                  error = `Semester ${i+1} SGPA must be between 0.00 and 10.00.`;
+              }
+              if (credits < 0 || credits > 35) {
+                  error = `Semester ${i+1} Credits must be between 0 and 35.`;
+              }
+          }
+      });
+      
+      if (error) {
+          showToast(error);
+          return;
+      }
+      
+      if (activeSemesters === 0) {
+          showToast('Please enter SGPA and Credits for at least one semester.');
+          return;
+      }
+      
+      cgpaResult.style.display = 'flex';
+      cgpaResult.innerHTML = '';
+      
+      const totalCredits = Number(document.getElementById('cgpaTotalCreditsCell').textContent) || 0;
+      const totalPoints = Number(document.getElementById('cgpaTotalPointsCell').textContent) || 0;
+      
+      let cgpa = 0.00;
+      if (totalCredits !== 0) {
+          cgpa = totalPoints / totalCredits;
+      }
+      
+      let badgeText = 'Outstanding!';
+      if (cgpa < 5.0) badgeText = 'Fail';
+      else if (cgpa < 6.5) badgeText = 'Second Class';
+      else if (cgpa < 7.5) badgeText = 'First Class';
+      else if (cgpa < 8.5) badgeText = 'Distinction';
+      else if (cgpa < 9.5) badgeText = 'Excellent (Distinction)';
+      else badgeText = 'Outstanding Rank 1';
+
+      const gaugeWrapper = document.createElement('div');
+      gaugeWrapper.className = 'result-gauge-container';
+      gaugeWrapper.innerHTML = `
+        <svg class="result-gauge" viewBox="0 0 120 120">
+          <circle class="gauge-bg" cx="60" cy="60" r="50"></circle>
+          <circle class="gauge-fill" id="cgpaGaugeCircle" cx="60" cy="60" r="50" style="stroke-dasharray: 314.16; stroke-dashoffset: 314.16;"></circle>
+        </svg>
+        <div class="gauge-text-container">
+          <span class="gauge-value" id="cgpaGaugeVal">0.00</span>
+          <span class="gauge-label">CGPA</span>
+        </div>
+      `;
+      
+      const performanceBadge = document.createElement('div');
+      performanceBadge.className = 'performance-badge';
+      performanceBadge.textContent = badgeText;
+      
+      const downloadBtn = document.createElement('button');
+      downloadBtn.id = 'downloadBtn';
+      downloadBtn.innerHTML = `
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Download CGPA Report
+      `;
+      
+      downloadBtn.onclick = () => {
+          const reportHtml = generateCgpaReportHTML(cgpa.toFixed(2));
+          const blob = new Blob([reportHtml], { type: 'text/html' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `CGPA_Academic_Transcript.html`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+      };
+
+      cgpaResult.appendChild(gaugeWrapper);
+      cgpaResult.appendChild(performanceBadge);
+      cgpaResult.appendChild(downloadBtn);
+
+      cgpaResult.scrollIntoView({ behavior: 'smooth' });
+
+      setTimeout(() => {
+          const circle = document.getElementById('cgpaGaugeCircle');
+          const offset = 314.16 * (1 - cgpa / 10.0);
+          circle.style.strokeDashoffset = offset;
+          
+          const valSpan = document.getElementById('cgpaGaugeVal');
+          let currentTick = 0.00;
+          const tickInterval = setInterval(() => {
+              currentTick += 0.07;
+              if (currentTick >= cgpa) {
+                  currentTick = cgpa;
+                  clearInterval(tickInterval);
+                  if (cgpa >= 8.5) {
+                      startConfetti();
+                  }
+              }
+              valSpan.textContent = currentTick.toFixed(2);
+          }, 20);
+      }, 100);
+  });
+
+  // --- Theme Selection Listeners ---
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const theme = btn.dataset.theme;
+      applyPresetTheme(theme);
+    });
+  });
+
+  // --- 3D Hover Tilt Logic ---
+  document.querySelectorAll('.choice-card').forEach(card => {
+    card.addEventListener('mousemove', (e) => {
+      const rect = card.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const xc = rect.width / 2;
+      const yc = rect.height / 2;
+      const dx = x - xc;
+      const dy = y - yc;
+      
+      card.style.transform = `perspective(1000px) rotateY(${dx / 12}deg) rotateX(${-dy / 12}deg) translateY(-6px)`;
+      card.style.setProperty('--x', `${x}px`);
+      card.style.setProperty('--y', `${y}px`);
+    });
+
+    card.addEventListener('mouseleave', () => {
+      card.style.transform = 'perspective(1000px) rotateY(0deg) rotateX(0deg) translateY(0)';
+    });
+  });
+
+  // Initialize default theme
+  applyPresetTheme('cyberpunk');
+
+  // Disable right-click globally
+  document.addEventListener('contextmenu', e => e.preventDefault());
 
 </script>
 
 </body>
 </html>
-<!-- sync -->
